@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/fatih/color"
+	"github.com/olekukonko/tablewriter"
 )
 
 /**
@@ -15,8 +17,11 @@ import (
 **/
 
 var (
+	Menu         int
 	itemKaryawan []Karyawan
 	itemGaji     []Gaji
+
+	dataKaryawan = DataKaryawan{itemKaryawan}
 
 	ErrorPrint   = color.New(color.FgRed).Add(color.BgWhite)
 	SuccessPrint = color.New(color.FgBlue).Add(color.BgWhite)
@@ -42,14 +47,102 @@ type DataGaji struct {
 }
 
 /**
+	+----------------------------------------+
+	| END OF VARIABLE AND RECORD DECLARATION |
+    +----------------------------------------+
+	|      START OF KARYAWAN FUNCTION		 |
+    +----------------------------------------+
+**/
+
+func (dataKaryawan *DataKaryawan) tambahKaryawan(itemKaryawan Karyawan) []Karyawan {
+	dataKaryawan.ItemsKaryawan = append(dataKaryawan.ItemsKaryawan, itemKaryawan)
+	return dataKaryawan.ItemsKaryawan
+}
+
+func inputKaryawan() {
+	var (
+		i, Golongan, Umur, JumlahAnak int
+		Nama, Alamat, KodePegawai     string
+		inputLagi                     string
+		validGolongan, Selesai        bool
+	)
+
+	for i = len(dataKaryawan.ItemsKaryawan); Selesai != true; i++ {
+		fmt.Println("")
+		fmt.Println("Masukkan Data Pegawai")
+
+		fmt.Print("Kode Pegawai : \t")
+		fmt.Scanln(&KodePegawai)
+
+		fmt.Print("Golongan : \t")
+		fmt.Scanln(&Golongan)
+		for validGolongan != true {
+			if Golongan > 3 && Golongan > 0 {
+				ErrorPrint.Println(" Golongan Tersebut Tidak Ada ! ")
+				fmt.Print("Golongan : \t")
+				fmt.Scanln(&Golongan)
+			} else {
+				validGolongan = true
+			}
+		}
+		fmt.Print("Umur Pegawai: \t")
+		fmt.Scanln(&Umur)
+
+		fmt.Print("Nama Pegawai: \t")
+		scanner.Scan()
+		Nama = scanner.Text()
+
+		fmt.Print("Jumlah Anak : \t")
+		fmt.Scanln(&JumlahAnak)
+
+		fmt.Print("Alamat : \t")
+		scanner.Scan()
+		Alamat = scanner.Text()
+
+		karyawan := Karyawan{
+			Nama:        Nama,
+			KodePegawai: KodePegawai,
+			Golongan:    Golongan,
+			Umur:        Umur,
+			JumlahAnak:  JumlahAnak,
+			Alamat:      Alamat,
+		}
+
+		dataKaryawan.tambahKaryawan(karyawan)
+		itemKaryawan = dataKaryawan.ItemsKaryawan
+
+		fmt.Println("\nData Berhasil Diinputkan :")
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Kode Pegawai", "Nama", "Golongan", "Umur", "Jumlah Anak", "Alamat"})
+		table.Append(
+			[]string{
+				dataKaryawan.ItemsKaryawan[i].KodePegawai,
+				dataKaryawan.ItemsKaryawan[i].Nama,
+				strconv.Itoa(dataKaryawan.ItemsKaryawan[i].Golongan),
+				strconv.Itoa(dataKaryawan.ItemsKaryawan[i].Umur),
+				strconv.Itoa(dataKaryawan.ItemsKaryawan[i].JumlahAnak),
+				dataKaryawan.ItemsKaryawan[i].Alamat,
+			},
+		)
+		table.Render()
+
+		fmt.Print("\nInput Lagi ? (Ya / Tidak) : ")
+		fmt.Scanln(&inputLagi)
+
+		if inputLagi == "Tidak" || inputLagi == "tidak" {
+			Selesai = true
+		}
+	}
+	menu()
+}
+
+/**
 	+-------------------------------------+
 	|    	MENU AND MAIN FUNCTION    	  |
     +-------------------------------------+
 **/
 
 func menu() {
-	var Menu int
-
 	fmt.Println("+----------------------------------+--------------------------------------+")
 	fmt.Println("| Menu 1 : Input Data Karyawan	   |	 Menu 4 : Input Gaji Karyawan	  |")
 	fmt.Println("| Menu 2 : Lihat Data Karyawan	   |	 Menu 5 : Histori Data Gaji	  |")
@@ -60,6 +153,9 @@ func menu() {
 	fmt.Scanln(&Menu)
 	fmt.Println("")
 
+	if Menu == 1 {
+		inputKaryawan()
+	}
 }
 
 func main() {
