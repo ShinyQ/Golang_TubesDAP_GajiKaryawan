@@ -136,6 +136,33 @@ func inputKaryawan() {
 	menu()
 }
 
+func tampilKaryawan() {
+	if len(itemKaryawan) != 0 {
+
+		SuccessPrint.Println(" Terdapat", len(itemKaryawan), "Data Karyawan \n")
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Kode Pegawai", "Nama", "Golongan", "Umur", "Jumlah Anak", "Alamat"})
+
+		for i := 0; i < len(itemKaryawan); i++ {
+			table.Append(
+				[]string{
+					itemKaryawan[i].KodePegawai,
+					itemKaryawan[i].Nama,
+					strconv.Itoa(itemKaryawan[i].Golongan),
+					strconv.Itoa(itemKaryawan[i].Umur),
+					strconv.Itoa(itemKaryawan[i].JumlahAnak),
+					itemKaryawan[i].Alamat,
+				},
+			)
+		}
+		table.Render()
+	} else {
+		ErrorPrint.Println(" Belum Ada Data Karyawan ")
+	}
+
+	menu()
+}
+
 /**
 	+-------------------------------------+
 	|    	MENU AND MAIN FUNCTION    	  |
@@ -155,6 +182,8 @@ func menu() {
 
 	if Menu == 1 {
 		inputKaryawan()
+	} else if Menu == 2 {
+		tampilKaryawan()
 	}
 }
 
