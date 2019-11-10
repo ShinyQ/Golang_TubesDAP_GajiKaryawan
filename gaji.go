@@ -136,9 +136,51 @@ func inputKaryawan() {
 	menu()
 }
 
+func prosesCariKaryawan(kode string) int {
+	var Selesai bool
+	var data int
+
+	for i := 0; i < len(dataKaryawan.ItemsKaryawan) && Selesai != true; i++ {
+		if itemKaryawan[i].KodePegawai == kode {
+			data = i
+			Selesai = true
+		} else {
+			data = -1
+		}
+	}
+	return data
+}
+
+func cariKaryawan() {
+	var KodePegawai string
+	var i int
+	fmt.Print("Masukkan Kode Pegawai : \t")
+	fmt.Scanln(&KodePegawai)
+
+	if prosesCariKaryawan(KodePegawai) != -1 {
+		i = prosesCariKaryawan(KodePegawai)
+		SuccessPrint.Println("\n Data Ditemukan : \n")
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Kode Pegawai", "Nama", "Golongan", "Umur", "Jumlah Anak", "Alamat"})
+		table.Append(
+			[]string{
+				itemKaryawan[i].KodePegawai,
+				itemKaryawan[i].Nama,
+				strconv.Itoa(itemKaryawan[i].Golongan),
+				strconv.Itoa(itemKaryawan[i].Umur),
+				strconv.Itoa(itemKaryawan[i].JumlahAnak),
+				itemKaryawan[i].Alamat,
+			},
+		)
+		table.Render()
+	} else {
+		ErrorPrint.Println("\n Maaf, Data Karyawan Tidak Ditemukan ")
+	}
+	menu()
+}
+
 func tampilKaryawan() {
 	if len(itemKaryawan) != 0 {
-
 		SuccessPrint.Println(" Terdapat", len(itemKaryawan), "Data Karyawan \n")
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Kode Pegawai", "Nama", "Golongan", "Umur", "Jumlah Anak", "Alamat"})
@@ -184,6 +226,8 @@ func menu() {
 		inputKaryawan()
 	} else if Menu == 2 {
 		tampilKaryawan()
+	} else if Menu == 3 {
+		cariKaryawan()
 	}
 }
 
