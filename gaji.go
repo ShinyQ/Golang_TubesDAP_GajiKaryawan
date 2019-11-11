@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 )
@@ -21,9 +22,6 @@ var (
 	itemKaryawan []Karyawan
 	itemGaji     []Gaji
 
-	dataKaryawan = DataKaryawan{itemKaryawan}
-	dataGaji     = DataGaji{itemGaji}
-
 	ErrorPrint   = color.New(color.FgRed).Add(color.BgWhite)
 	SuccessPrint = color.New(color.FgBlue).Add(color.BgWhite)
 	scanner      = bufio.NewScanner(os.Stdin)
@@ -34,17 +32,9 @@ type Karyawan struct {
 	Nama, Alamat, KodePegawai  string
 }
 
-type DataKaryawan struct {
-	ItemsKaryawan []Karyawan
-}
-
 type Gaji struct {
 	KodePegawai, Bulan  string
 	JamKerja, TotalGaji int
-}
-
-type DataGaji struct {
-	ItemsGaji []Gaji
 }
 
 /**
@@ -55,11 +45,6 @@ type DataGaji struct {
     +----------------------------------------+
 **/
 
-func (dataKaryawan *DataKaryawan) tambahKaryawan(itemKaryawan Karyawan) []Karyawan {
-	dataKaryawan.ItemsKaryawan = append(dataKaryawan.ItemsKaryawan, itemKaryawan)
-	return dataKaryawan.ItemsKaryawan
-}
-
 func inputKaryawan() {
 	var (
 		i, Golongan, Umur, JumlahAnak int
@@ -68,7 +53,7 @@ func inputKaryawan() {
 		validGolongan, Selesai        bool
 	)
 
-	for i = len(dataKaryawan.ItemsKaryawan); Selesai != true; i++ {
+	for i = len(itemKaryawan); Selesai != true; i++ {
 		fmt.Println("Masukkan Data Pegawai")
 
 		fmt.Print("Kode Pegawai : \t")
@@ -108,28 +93,27 @@ func inputKaryawan() {
 			Alamat:      Alamat,
 		}
 
-		dataKaryawan.tambahKaryawan(karyawan)
-		itemKaryawan = dataKaryawan.ItemsKaryawan
+		itemKaryawan = append(itemKaryawan, karyawan)
 
 		fmt.Println("\nData Berhasil Diinputkan :")
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Kode Pegawai", "Nama", "Golongan", "Umur", "Jumlah Anak", "Alamat"})
 		table.Append(
 			[]string{
-				dataKaryawan.ItemsKaryawan[i].KodePegawai,
-				dataKaryawan.ItemsKaryawan[i].Nama,
-				strconv.Itoa(dataKaryawan.ItemsKaryawan[i].Golongan),
-				strconv.Itoa(dataKaryawan.ItemsKaryawan[i].Umur),
-				strconv.Itoa(dataKaryawan.ItemsKaryawan[i].JumlahAnak),
-				dataKaryawan.ItemsKaryawan[i].Alamat,
+				itemKaryawan[i].KodePegawai,
+				itemKaryawan[i].Nama,
+				strconv.Itoa(itemKaryawan[i].Golongan),
+				strconv.Itoa(itemKaryawan[i].Umur),
+				strconv.Itoa(itemKaryawan[i].JumlahAnak),
+				itemKaryawan[i].Alamat,
 			},
 		)
 		table.Render()
 
-		fmt.Print("\nInput Lagi ? (Ya / Tidak) : ")
+		fmt.Print("\nInput Lagi ? (Y / T) : ")
 		fmt.Scanln(&inputLagi)
 
-		if inputLagi == "Tidak" || inputLagi == "tidak" {
+		if inputLagi == "T" || inputLagi == "t" {
 			Selesai = true
 		}
 	}
@@ -140,7 +124,7 @@ func prosesCariKaryawan(kode string) int {
 	var Selesai bool
 	var data int
 
-	for i := 0; i < len(dataKaryawan.ItemsKaryawan) && Selesai != true; i++ {
+	for i := 0; i < len(itemKaryawan) && Selesai != true; i++ {
 		if itemKaryawan[i].KodePegawai == kode {
 			data = i
 			Selesai = true
@@ -183,11 +167,12 @@ func tampilKaryawan() {
 	if len(itemKaryawan) != 0 {
 		SuccessPrint.Println(" Terdapat", len(itemKaryawan), "Data Karyawan \n")
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Kode Pegawai", "Nama", "Golongan", "Umur", "Jumlah Anak", "Alamat"})
+		table.SetHeader([]string{"No", "Kode Pegawai", "Nama", "Golongan", "Umur", "Jumlah Anak", "Alamat"})
 
 		for i := 0; i < len(itemKaryawan); i++ {
 			table.Append(
 				[]string{
+					strconv.Itoa(i+1) + ".",
 					itemKaryawan[i].KodePegawai,
 					itemKaryawan[i].Nama,
 					strconv.Itoa(itemKaryawan[i].Golongan),
@@ -205,6 +190,64 @@ func tampilKaryawan() {
 	menu()
 }
 
+func sortKaryawanGolongan() {
+	var (
+		sortKaryawan []Karyawan
+		sorted       = false
+		Golongan, n  int
+	)
+	fmt.Print("Masukkan Golongan : ")
+	fmt.Scanln(&Golongan)
+
+	for i := 0; i < len(itemKaryawan); i++ {
+		if itemKaryawan[i].Golongan == Golongan {
+
+			karyawan := Karyawan{
+				Nama:        itemKaryawan[i].Nama,
+				KodePegawai: itemKaryawan[i].KodePegawai,
+				Golongan:    itemKaryawan[i].Golongan,
+				Umur:        itemKaryawan[i].Umur,
+				JumlahAnak:  itemKaryawan[i].JumlahAnak,
+				Alamat:      itemKaryawan[i].Alamat,
+			}
+			sortKaryawan = append(sortKaryawan, karyawan)
+		}
+	}
+
+	n = len(sortKaryawan)
+	for !sorted {
+		swapped := false
+		for i := 0; i < n-1; i++ {
+			if sortKaryawan[i].Nama > sortKaryawan[i+1].Nama {
+				sortKaryawan[i+1], sortKaryawan[i] = sortKaryawan[i], sortKaryawan[i+1]
+				swapped = true
+			}
+		}
+		if !swapped {
+			sorted = true
+		}
+		n--
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"No", "Kode Pegawai", "Nama", "Golongan", "Umur", "Jumlah Anak", "Alamat"})
+	for i := 0; i < len(sortKaryawan); i++ {
+		table.Append(
+			[]string{
+				strconv.Itoa(i+1) + ".",
+				sortKaryawan[i].KodePegawai,
+				sortKaryawan[i].Nama,
+				strconv.Itoa(sortKaryawan[i].Golongan),
+				strconv.Itoa(sortKaryawan[i].Umur),
+				strconv.Itoa(sortKaryawan[i].JumlahAnak),
+				sortKaryawan[i].Alamat,
+			},
+		)
+	}
+	table.Render()
+	menu()
+}
+
 /**
 	+-------------------------------------+
 	|		END OF KARYAWAN FUNCTION	  |
@@ -212,11 +255,6 @@ func tampilKaryawan() {
 	|		START OF GAJI FUNCTION		  |
 	+-------------------------------------+
 **/
-
-func (dataGaji *DataGaji) tambahGaji(itemGaji Gaji) []Gaji {
-	dataGaji.ItemsGaji = append(dataGaji.ItemsGaji, itemGaji)
-	return dataGaji.ItemsGaji
-}
 
 func inputGaji() {
 	var (
@@ -227,8 +265,7 @@ func inputGaji() {
 		inputLagi                      string
 	)
 
-	for i = len(dataGaji.ItemsGaji); Selesai != true; i++ {
-		fmt.Println("")
+	for i = len(itemGaji); Selesai != true; i++ {
 		fmt.Println("Masukkan Gaji Pegawai")
 
 		fmt.Print("Kode Pegawai \t : ")
@@ -278,8 +315,7 @@ func inputGaji() {
 			TotalGaji:   TotalGaji,
 		}
 
-		dataGaji.tambahGaji(gaji)
-		itemGaji = dataGaji.ItemsGaji
+		itemGaji = append(itemGaji, gaji)
 
 		fmt.Println("\nData Berhasil Diinputkan :")
 		table := tablewriter.NewWriter(os.Stdout)
@@ -287,10 +323,10 @@ func inputGaji() {
 
 		table.Append(
 			[]string{
-				dataGaji.ItemsGaji[i].KodePegawai,
-				dataGaji.ItemsGaji[i].Bulan,
-				strconv.Itoa(dataGaji.ItemsGaji[i].JamKerja),
-				strconv.Itoa(dataGaji.ItemsGaji[i].TotalGaji),
+				itemGaji[i].KodePegawai,
+				itemGaji[i].Bulan,
+				strconv.Itoa(itemGaji[i].JamKerja),
+				"Rp" + humanize.Comma(int64(itemGaji[i].TotalGaji)) + ",00",
 			},
 		)
 		table.Render()
@@ -309,11 +345,12 @@ func tampilGaji() {
 	if len(itemGaji) != 0 {
 
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Kode Pegawai", "Bulan", "Jam Kerja", "Total Gaji"})
+		table.SetHeader([]string{"No", "Kode Pegawai", "Bulan", "Jam Kerja", "Total Gaji"})
 
 		for i := 0; i < len(itemGaji); i++ {
 			table.Append(
 				[]string{
+					strconv.Itoa(i+1) + ".",
 					itemGaji[i].KodePegawai,
 					itemGaji[i].Bulan,
 					strconv.Itoa(itemGaji[i].JamKerja),
@@ -333,7 +370,7 @@ func prosesCariGaji(kode string) int {
 	var Selesai bool
 	var data int
 
-	for i := 0; i < len(dataGaji.ItemsGaji) && Selesai != true; i++ {
+	for i := 0; i < len(itemGaji) && Selesai != true; i++ {
 		if itemGaji[i].KodePegawai == kode {
 			data = i
 			Selesai = true
@@ -354,7 +391,7 @@ func cariGaji() {
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Kode Pegawai", "Bulan", "Jam Kerja", "Total Gaji"})
 
-		for i := 0; i < len(dataGaji.ItemsGaji); i++ {
+		for i := 0; i < len(itemGaji); i++ {
 			if itemGaji[i].KodePegawai == KodePegawai {
 				table.Append(
 					[]string{
@@ -382,11 +419,11 @@ func cariGaji() {
 
 func menu() {
 
-	fmt.Println("\n+----------------------------------+--------------------------------------+")
-	fmt.Println("| Menu 1 : Input Data Karyawan	   |	 Menu 4 : Input Gaji Karyawan	  |")
+	fmt.Println("\n+----------------------------------+--------------------------------------+-------------------------------------------------------+")
+	fmt.Println("| Menu 1 : Input Data Karyawan	   |	 Menu 4 : Input Gaji Karyawan	  |	 Menu 7 : Cari Karyawan Berdasarkan Golongan	  |")
 	fmt.Println("| Menu 2 : Lihat Data Karyawan	   |	 Menu 5 : Histori Data Gaji	  |")
 	fmt.Println("| Menu 3 : Cari Data Karyawan 	   |	 Menu 6 : Cari Histori Data Gaji  |")
-	fmt.Println("+----------------------------------+--------------------------------------+\n")
+	fmt.Println("+----------------------------------+--------------------------------------+-------------------------------------------------------+\n")
 
 	fmt.Print("Silahakan Pilih Menu : ")
 	fmt.Scanln(&Menu)
@@ -404,10 +441,13 @@ func menu() {
 		tampilGaji()
 	} else if Menu == 6 {
 		cariGaji()
+	} else if Menu == 7 {
+		sortKaryawanGolongan()
 	} else {
 		ErrorPrint.Println(" Menu Tersebut Tidak Ada ! ")
 		menu()
 	}
+
 }
 
 func main() {
