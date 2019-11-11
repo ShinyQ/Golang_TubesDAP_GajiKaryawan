@@ -22,6 +22,7 @@ var (
 	itemGaji     []Gaji
 
 	dataKaryawan = DataKaryawan{itemKaryawan}
+	dataGaji     = DataGaji{itemGaji}
 
 	ErrorPrint   = color.New(color.FgRed).Add(color.BgWhite)
 	SuccessPrint = color.New(color.FgBlue).Add(color.BgWhite)
@@ -154,7 +155,7 @@ func prosesCariKaryawan(kode string) int {
 func cariKaryawan() {
 	var KodePegawai string
 	var i int
-	fmt.Print("Masukkan Kode Pegawai : \t")
+	fmt.Print("Masukkan Kode Pegawai : ")
 	fmt.Scanln(&KodePegawai)
 
 	if prosesCariKaryawan(KodePegawai) != -1 {
@@ -207,6 +208,130 @@ func tampilKaryawan() {
 
 /**
 	+-------------------------------------+
+	|		END OF KARYAWAN FUNCTION	  |
+    +-------------------------------------+
+	|		START OF GAJI FUNCTION		  |
+	+-------------------------------------+
+**/
+
+func (dataGaji *DataGaji) tambahGaji(itemGaji Gaji) []Gaji {
+	dataGaji.ItemsGaji = append(dataGaji.ItemsGaji, itemGaji)
+	return dataGaji.ItemsGaji
+}
+
+func inputGaji() {
+	var (
+		KodePegawai, Bulan             string
+		JamKerja, TotalGaji, GajiTetap int
+		Selesai                        bool
+		i, Golongan, JumlahAnak, index int
+		inputLagi                      string
+	)
+
+	for i = len(dataGaji.ItemsGaji); Selesai != true; i++ {
+		fmt.Println("")
+		fmt.Println("Masukkan Gaji Pegawai")
+
+		fmt.Print("Kode Pegawai \t : ")
+		fmt.Scanln(&KodePegawai)
+		for Selesai != true {
+
+			if prosesCariKaryawan(KodePegawai) == -1 {
+				fmt.Print("Kode Pegawai \t : ")
+				fmt.Scanln(&KodePegawai)
+			} else {
+				Selesai = true
+			}
+		}
+
+		fmt.Print("Bulan \t\t : ")
+		fmt.Scanln(&Bulan)
+
+		fmt.Print("Jumlah Jam Kerja : ")
+		fmt.Scanln(&JamKerja)
+
+		index = prosesCariKaryawan(KodePegawai)
+		Golongan = itemKaryawan[index].Golongan
+		JumlahAnak = itemKaryawan[index].JumlahAnak
+
+		if Golongan == 1 {
+			TotalGaji = JamKerja * 5000
+			TotalGaji = TotalGaji + (500000 * JumlahAnak)
+			GajiTetap = 500000
+		} else if Golongan == 2 {
+			TotalGaji = JamKerja * 3000
+			TotalGaji = TotalGaji + (400000 * JumlahAnak)
+			GajiTetap = 300000
+		} else {
+			TotalGaji = JamKerja * 20000
+			TotalGaji = TotalGaji + (300000 * JumlahAnak)
+			GajiTetap = 250000
+		}
+
+		if Bulan == "Januari" || Bulan == "Agustus" || Bulan == "Oktober" {
+			TotalGaji = TotalGaji + (GajiTetap * 10 / 100)
+		}
+
+		gaji := Gaji{
+			KodePegawai: KodePegawai,
+			Bulan:       Bulan,
+			JamKerja:    JamKerja,
+			TotalGaji:   TotalGaji,
+		}
+
+		dataGaji.tambahGaji(gaji)
+		itemGaji = dataGaji.ItemsGaji
+		fmt.Println(itemKaryawan)
+		fmt.Println("\nData Berhasil Diinputkan :")
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Kode Pegawai", "Bulan", "Jam Kerja", "Total Gaji"})
+
+		table.Append(
+			[]string{
+				dataGaji.ItemsGaji[i].KodePegawai,
+				dataGaji.ItemsGaji[i].Bulan,
+				strconv.Itoa(dataGaji.ItemsGaji[i].JamKerja),
+				strconv.Itoa(dataGaji.ItemsGaji[i].TotalGaji),
+			},
+		)
+		table.Render()
+
+		fmt.Print("\nInput Lagi ? (Y / T) : ")
+		fmt.Scanln(&inputLagi)
+
+		if inputLagi == "T" || inputLagi == "t" {
+			Selesai = true
+		}
+	}
+	menu()
+}
+
+func tampilGaji() {
+	if len(itemGaji) != 0 {
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Kode Pegawai", "Bulan", "Jam Kerja", "Total Gaji"})
+
+		for i := 0; i < len(itemGaji); i++ {
+			table.Append(
+				[]string{
+					itemGaji[i].KodePegawai,
+					itemGaji[i].Bulan,
+					strconv.Itoa(itemGaji[i].JamKerja),
+					strconv.Itoa(itemGaji[i].TotalGaji),
+				},
+			)
+		}
+		table.Render()
+	} else {
+		ErrorPrint.Println(" Belum Ada Data Gaji ")
+	}
+
+	menu()
+}
+
+/**
+	+-------------------------------------+
 	|    	MENU AND MAIN FUNCTION    	  |
     +-------------------------------------+
 **/
@@ -228,6 +353,10 @@ func menu() {
 		tampilKaryawan()
 	} else if Menu == 3 {
 		cariKaryawan()
+	} else if Menu == 4 {
+		inputGaji()
+	} else if Menu == 5 {
+		tampilGaji()
 	}
 }
 
