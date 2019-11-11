@@ -69,7 +69,6 @@ func inputKaryawan() {
 	)
 
 	for i = len(dataKaryawan.ItemsKaryawan); Selesai != true; i++ {
-		fmt.Println("")
 		fmt.Println("Masukkan Data Pegawai")
 
 		fmt.Print("Kode Pegawai : \t")
@@ -281,7 +280,7 @@ func inputGaji() {
 
 		dataGaji.tambahGaji(gaji)
 		itemGaji = dataGaji.ItemsGaji
-		fmt.Println(itemKaryawan)
+
 		fmt.Println("\nData Berhasil Diinputkan :")
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Kode Pegawai", "Bulan", "Jam Kerja", "Total Gaji"})
@@ -330,6 +329,51 @@ func tampilGaji() {
 	menu()
 }
 
+func prosesCariGaji(kode string) int {
+	var Selesai bool
+	var data int
+
+	for i := 0; i < len(dataGaji.ItemsGaji) && Selesai != true; i++ {
+		if itemGaji[i].KodePegawai == kode {
+			data = i
+			Selesai = true
+		} else {
+			data = -1
+		}
+	}
+	return data
+}
+
+func cariGaji() {
+	var KodePegawai string
+	fmt.Print("Masukkan Kode Pegawai : \t")
+	fmt.Scanln(&KodePegawai)
+
+	if prosesCariGaji(KodePegawai) != -1 {
+		SuccessPrint.Println("\n Data Ditemukan : \n")
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Kode Pegawai", "Bulan", "Jam Kerja", "Total Gaji"})
+
+		for i := 0; i < len(dataGaji.ItemsGaji); i++ {
+			if itemGaji[i].KodePegawai == KodePegawai {
+				table.Append(
+					[]string{
+						itemGaji[i].KodePegawai,
+						itemGaji[i].Bulan,
+						strconv.Itoa(itemGaji[i].JamKerja),
+						strconv.Itoa(itemGaji[i].TotalGaji),
+					},
+				)
+			}
+		}
+		table.Render()
+	} else {
+		ErrorPrint.Println("\n Maaf, Data Gaji Tidak Ditemukan ")
+	}
+
+	menu()
+}
+
 /**
 	+-------------------------------------+
 	|    	MENU AND MAIN FUNCTION    	  |
@@ -337,7 +381,8 @@ func tampilGaji() {
 **/
 
 func menu() {
-	fmt.Println("+----------------------------------+--------------------------------------+")
+
+	fmt.Println("\n+----------------------------------+--------------------------------------+")
 	fmt.Println("| Menu 1 : Input Data Karyawan	   |	 Menu 4 : Input Gaji Karyawan	  |")
 	fmt.Println("| Menu 2 : Lihat Data Karyawan	   |	 Menu 5 : Histori Data Gaji	  |")
 	fmt.Println("| Menu 3 : Cari Data Karyawan 	   |	 Menu 6 : Cari Histori Data Gaji  |")
@@ -357,6 +402,11 @@ func menu() {
 		inputGaji()
 	} else if Menu == 5 {
 		tampilGaji()
+	} else if Menu == 6 {
+		cariGaji()
+	} else {
+		ErrorPrint.Println(" Menu Tersebut Tidak Ada ! ")
+		menu()
 	}
 }
 
