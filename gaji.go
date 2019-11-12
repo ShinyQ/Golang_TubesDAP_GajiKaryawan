@@ -48,10 +48,10 @@ type Gaji struct {
 
 func inputKaryawan() {
 	var (
-		i, Golongan, Umur, JumlahAnak int
-		Nama, Alamat, KodePegawai     string
-		inputLagi                     string
-		validGolongan, Selesai        bool
+		i, Golongan, Umur, JumlahAnak                int
+		Nama, Alamat, KodePegawai                    string
+		inputLagi                                    string
+		validGolongan, validUmur, validAnak, Selesai bool
 	)
 
 	for i = len(itemKaryawan); Selesai != true; i++ {
@@ -62,17 +62,28 @@ func inputKaryawan() {
 
 		fmt.Print("Golongan : \t")
 		fmt.Scanln(&Golongan)
+
 		for validGolongan != true {
-			if Golongan > 3 && Golongan > 0 {
-				ErrorPrint.Println(" Golongan Tersebut Tidak Ada ! ")
+			if Golongan > 3 || Golongan < 0 {
+				ErrorPrint.Println("\n Golongan Tersebut Tidak Ada ! \n")
 				fmt.Print("Golongan : \t")
 				fmt.Scanln(&Golongan)
 			} else {
 				validGolongan = true
 			}
 		}
+
 		fmt.Print("Umur Pegawai: \t")
 		fmt.Scanln(&Umur)
+		for validUmur != true {
+			if Umur < 1 {
+				ErrorPrint.Println("\n Umur Tidak Valid ! \n")
+				fmt.Print("Umur Pegawai: \t")
+				fmt.Scanln(&Umur)
+			} else {
+				validUmur = true
+			}
+		}
 
 		fmt.Print("Nama Pegawai: \t")
 		scanner.Scan()
@@ -80,6 +91,15 @@ func inputKaryawan() {
 
 		fmt.Print("Jumlah Anak : \t")
 		fmt.Scanln(&JumlahAnak)
+		for validAnak != true {
+			if JumlahAnak < 0 {
+				ErrorPrint.Println("\n Jumlah Anak Tidak Valid ! \n")
+				fmt.Print("Jumlah Anak : \t")
+				fmt.Scanln(&JumlahAnak)
+			} else {
+				validAnak = true
+			}
+		}
 
 		fmt.Print("Alamat : \t")
 		scanner.Scan()
@@ -269,15 +289,28 @@ func sortKaryawanGolongan() {
 	|		START OF GAJI FUNCTION		  |
 	+-------------------------------------+
 **/
+func validasiBulan(Bulan string) bool {
+	var validBulan bool
+	arrBulan := [12]string{"Janurai", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"}
+
+	for j := 0; j < len(arrBulan); j++ {
+		if Bulan == arrBulan[j] {
+			validBulan = true
+		}
+	}
+	return validBulan
+}
 
 func inputGaji() {
 	var (
-		KodePegawai, Bulan             string
-		JamKerja, TotalGaji, GajiTetap int
-		Selesai, validKode             bool
-		i, Golongan, JumlahAnak, index int
-		inputLagi                      string
+		KodePegawai, Bulan                         string
+		JamKerja, TotalGaji, GajiTetap             int
+		Selesai, validKode, validBulan, validWaktu bool
+		i, Golongan, JumlahAnak, index             int
+		inputLagi                                  string
 	)
+
+	tampilKaryawan()
 
 	for i = len(itemGaji); Selesai != true; i++ {
 		fmt.Println("Masukkan Gaji Pegawai")
@@ -285,8 +318,8 @@ func inputGaji() {
 		fmt.Print("Kode Pegawai \t : ")
 		fmt.Scanln(&KodePegawai)
 		for validKode != true {
-
 			if prosesCariKaryawan(KodePegawai) == -1 {
+				ErrorPrint.Println("\n Kode Pegawai Tidak Valid ! \n")
 				fmt.Print("Kode Pegawai \t : ")
 				fmt.Scanln(&KodePegawai)
 			} else {
@@ -296,9 +329,28 @@ func inputGaji() {
 
 		fmt.Print("Bulan \t\t : ")
 		fmt.Scanln(&Bulan)
+		for validBulan != true {
+			if validasiBulan(Bulan) {
+				validBulan = true
+			} else {
+				ErrorPrint.Println("\n Bulan Tersebut Tidak Ada ! \n")
+				fmt.Print("Bulan \t\t : ")
+				fmt.Scanln(&Bulan)
+			}
+		}
 
 		fmt.Print("Jumlah Jam Kerja : ")
 		fmt.Scanln(&JamKerja)
+
+		for validWaktu != true {
+			if JamKerja >= 0 {
+				validWaktu = true
+			} else {
+				ErrorPrint.Println("\n Jumlah Waktu Kerja Tidak Valid ! \n")
+				fmt.Print("Jumlah Jam Kerja : ")
+				fmt.Scanln(&JamKerja)
+			}
+		}
 
 		index = prosesCariKaryawan(KodePegawai)
 		Golongan = itemKaryawan[index].Golongan
@@ -464,7 +516,7 @@ func sortGajiBulan() {
 		for !sorted {
 			swapped := false
 			for i := 0; i < n-1; i++ {
-				if sortGaji[i].KodePegawai > sortGaji[i+1].KodePegawai {
+				if sortGaji[i].KodePegawai < sortGaji[i+1].KodePegawai {
 					sortGaji[i+1], sortGaji[i] = sortGaji[i], sortGaji[i+1]
 					swapped = true
 				}

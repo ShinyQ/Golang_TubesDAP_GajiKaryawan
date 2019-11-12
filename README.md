@@ -7,6 +7,8 @@
 
 2. Azrina Fazira Anshory (1301194241)
 
+<br />
+
 **Penggunaan Awal:**
 
 Buka CMD atau Terminal kemudian lakukan instalasi library dibawah dengan command sebagai berikut :
@@ -16,6 +18,8 @@ Buka CMD atau Terminal kemudian lakukan instalasi library dibawah dengan command
 `go get github.com/fatih/color`
 
 `go get github.com/olekukonko/tablewriter`
+
+<br />
 
 **Fitur Aplikasi :**
 
@@ -27,6 +31,8 @@ Buka CMD atau Terminal kemudian lakukan instalasi library dibawah dengan command
 6. Menampilkan Seluruh Histori Gaji Karyawan
 7. Mencari Penggajian Karyawan Dengan Kode Karyawan
 8. Sorting Histori Penggajian Bulan Tertentu Secara Descending Berdasarkan Kode Pegawai
+
+<br />
 
 **Library Yang Digunakan :**
 
