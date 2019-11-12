@@ -18,7 +18,8 @@ import (
 **/
 
 var (
-	Menu         int
+	Menu int
+
 	itemKaryawan []Karyawan
 	itemGaji     []Gaji
 
@@ -112,7 +113,7 @@ func inputKaryawan() {
 
 		fmt.Print("\nInput Lagi ? (Y / T) : ")
 		fmt.Scanln(&inputLagi)
-
+		fmt.Println("")
 		if inputLagi == "T" || inputLagi == "t" {
 			Selesai = true
 		}
@@ -199,7 +200,7 @@ func tampilKaryawan() {
 func sortKaryawanGolongan() {
 	var (
 		sortKaryawan []Karyawan
-		sorted       = false
+		sorted       bool
 		Golongan, n  int
 	)
 	fmt.Print("Masukkan Golongan : ")
@@ -236,6 +237,8 @@ func sortKaryawanGolongan() {
 			n--
 		}
 
+		SuccessPrint.Println("\n Terdapat", n+1, "Karyawan Golongan", Golongan, ":\n")
+
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"No", "Kode Pegawai", "Nama", "Golongan", "Umur", "Jumlah Anak", "Alamat"})
 		for i := 0; i < len(sortKaryawan); i++ {
@@ -271,7 +274,7 @@ func inputGaji() {
 	var (
 		KodePegawai, Bulan             string
 		JamKerja, TotalGaji, GajiTetap int
-		Selesai                        bool
+		Selesai, validKode             bool
 		i, Golongan, JumlahAnak, index int
 		inputLagi                      string
 	)
@@ -281,13 +284,13 @@ func inputGaji() {
 
 		fmt.Print("Kode Pegawai \t : ")
 		fmt.Scanln(&KodePegawai)
-		for Selesai != true {
+		for validKode != true {
 
 			if prosesCariKaryawan(KodePegawai) == -1 {
 				fmt.Print("Kode Pegawai \t : ")
 				fmt.Scanln(&KodePegawai)
 			} else {
-				Selesai = true
+				validKode = true
 			}
 		}
 
@@ -344,16 +347,13 @@ func inputGaji() {
 
 		fmt.Print("\nInput Lagi ? (Y / T) : ")
 		fmt.Scanln(&inputLagi)
+		fmt.Println("")
 
 		if inputLagi == "T" || inputLagi == "t" {
 			Selesai = true
 		}
 	}
 	menu()
-}
-
-func showGaji(itemGaji []Gaji) {
-
 }
 
 func tampilGaji() {
@@ -444,7 +444,8 @@ func sortGajiBulan() {
 	fmt.Print("Masukkan Bulan Penggajian : ")
 	fmt.Scanln(&Bulan)
 
-	for i := 0; i < len(itemKaryawan); i++ {
+	for i := 0; i < len(itemGaji); i++ {
+		fmt.Println(itemGaji[i].Bulan, " , ", Bulan)
 		if itemGaji[i].Bulan == Bulan {
 
 			gaji := Gaji{
@@ -473,17 +474,16 @@ func sortGajiBulan() {
 			}
 			n--
 		}
-
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Kode Pegawai", "Bulan", "Jam Kerja", "Total Gaji"})
+		table.SetHeader([]string{"No", "Kode Pegawai", "Bulan", "Jam Kerja", "Total Gaji"})
 		for i := 0; i < len(sortGaji); i++ {
 			table.Append(
 				[]string{
 					strconv.Itoa(i+1) + ".",
-					itemGaji[i].KodePegawai,
-					itemGaji[i].Bulan,
-					strconv.Itoa(itemGaji[i].JamKerja),
-					"Rp" + humanize.Comma(int64(itemGaji[i].TotalGaji)) + ",00",
+					sortGaji[i].KodePegawai,
+					sortGaji[i].Bulan,
+					strconv.Itoa(sortGaji[i].JamKerja),
+					"Rp" + humanize.Comma(int64(sortGaji[i].TotalGaji)) + ",00",
 				},
 			)
 		}
