@@ -159,35 +159,35 @@ func inputKaryawan() {
 */
 func prosesCariKaryawan(kode string) int {
 	var Selesai bool
-	var data int
+	var index int
 
 	for i := 0; i < len(itemKaryawan) && Selesai != true; i++ {
 		if itemKaryawan[i].KodePegawai == kode {
-			data = i
+			index = i
 			Selesai = true
 		} else {
-			data = -1
+			index = -1
 		}
 	}
-	return data
+	return index
 }
 
 func cariKaryawan() {
 	// Function cari karyawan dimana user menginputkan kode karyawan yang akan dicari
 	var KodePegawai string
-	var data int
+	var index int
 
 	fmt.Print("Masukkan Kode Pegawai : ")
 	fmt.Scanln(&KodePegawai)
 
 	if len(itemKaryawan) == 0 {
-		data = -1
+		index = -1
 	} else {
-		data = prosesCariKaryawan(KodePegawai)
+		index = prosesCariKaryawan(KodePegawai)
 	}
 
 	// Proses Percabangan apabila indeks array karyawan ditemukan atau tidak
-	if data != -1 {
+	if index != -1 {
 
 		// Proses menampilkan data karyawan yang telah ditemukan sesuai dengan indeks array yang di return
 		SuccessPrint.Println("\n Data Ditemukan : \n")
@@ -195,12 +195,12 @@ func cariKaryawan() {
 		table.SetHeader([]string{"Kode Pegawai", "Nama", "Golongan", "Umur", "Jumlah Anak", "Alamat"})
 		table.Append(
 			[]string{
-				itemKaryawan[data].KodePegawai,
-				itemKaryawan[data].Nama,
-				strconv.Itoa(itemKaryawan[data].Golongan),
-				strconv.Itoa(itemKaryawan[data].Umur),
-				strconv.Itoa(itemKaryawan[data].JumlahAnak),
-				itemKaryawan[data].Alamat,
+				itemKaryawan[index].KodePegawai,
+				itemKaryawan[index].Nama,
+				strconv.Itoa(itemKaryawan[index].Golongan),
+				strconv.Itoa(itemKaryawan[index].Umur),
+				strconv.Itoa(itemKaryawan[index].JumlahAnak),
+				itemKaryawan[index].Alamat,
 			},
 		)
 		table.Render()
@@ -329,7 +329,10 @@ func sortKaryawanGolongan() {
 // Function untuk melakukan validasi inputan bulan penggajian
 func validasiBulan(Bulan string) bool {
 	var validBulan bool
-	arrBulan := [12]string{"Janurai", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"}
+	arrBulan := [12]string{
+		"Januari", "Februari", "Maret", "April", "Mei", "Juni",
+		"Juli", "Agustus", "September", "Oktober", "November", "Desember",
+	}
 
 	for j := 0; j < len(arrBulan); j++ {
 		if Bulan == arrBulan[j] {
@@ -488,37 +491,37 @@ func tampilGaji() {
 // Function proses melakukan pencarian gaji sesuai kode pegawai dan akan mengembalikan nilai indeks array dari data pegawai
 func prosesCariGaji(kode string) int {
 	var Selesai bool
-	var data int
+	var index int
 
 	// Perulangan untuk melakukan pencarian gaji sesuai dengan kode pegawai
 	for i := 0; i < len(itemGaji) && Selesai != true; i++ {
 		if itemGaji[i].KodePegawai == kode {
-			data = i
+			index = i
 			Selesai = true
 		} else {
-			data = -1
+			index = -1
 		}
 	}
-	return data
+	return index
 }
 
 // Function Cari Gaji untuk melakukan inputan kode pegawai serta menampilkan seluruh data gaji sesuai kode pegawai
 func cariGaji() {
 	var KodePegawai string
-	var data int
+	var index int
 
 	fmt.Print("Masukkan Kode Pegawai : ")
 	fmt.Scanln(&KodePegawai)
 
 	// Seleksi dan Proses Pencarian Data Gaji Sesuai Kode Pegawai
 	if len(itemGaji) == 0 {
-		data = -1
+		index = -1
 	} else {
-		data = prosesCariGaji(KodePegawai)
+		index = prosesCariGaji(KodePegawai)
 	}
 
 	// Proses percabangan apakah ditemukan kode pegawai atau tidak
-	if data != -1 {
+	if index != -1 {
 
 		// Proses menampilkan data gaji pegawai sesuai dengan indeks array yang ditemukan pada pencarian kode pegawai
 		SuccessPrint.Println("\n Data Ditemukan : \n")
@@ -548,10 +551,10 @@ func cariGaji() {
 // Proses melakukan sorting berdasarkan pencarian bulan berdasarkan kode pegawai secara descendend (Tinggi Ke Rendah)
 func sortGajiBulan() {
 	var (
-		sortGaji []Gaji
-		sorted   = false
-		Bulan    string
-		n        int
+		sortGaji       []Gaji
+		sorted         = false
+		Bulan          string
+		jumlahDataGaji int
 	)
 	fmt.Print("Masukkan Bulan Penggajian : ")
 	fmt.Scanln(&Bulan)
@@ -573,14 +576,14 @@ func sortGajiBulan() {
 		}
 	}
 
-	n = len(sortGaji)
+	jumlahDataGaji = len(sortGaji)
 	// Proses seleksi apakah pencarian array sort gaji menghasilkan data array atau tidak
-	if n != 0 {
+	if jumlahDataGaji != 0 {
 
 		// Proses melakukan sorting data pada array sort gaji berdasarkan kode pegawai secara descendend
 		for !sorted {
 			swapped := false
-			for i := 0; i < n-1; i++ {
+			for i := 0; i < jumlahDataGaji-1; i++ {
 				if sortGaji[i].KodePegawai < sortGaji[i+1].KodePegawai {
 					sortGaji[i+1], sortGaji[i] = sortGaji[i], sortGaji[i+1]
 					swapped = true
@@ -590,7 +593,7 @@ func sortGajiBulan() {
 			if !swapped {
 				sorted = true
 			}
-			n--
+			jumlahDataGaji--
 		}
 
 		// Proses menampilkan data array sort gaji yang telah di sorting
