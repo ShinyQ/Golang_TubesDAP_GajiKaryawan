@@ -54,7 +54,7 @@ func inputKaryawan() {
 		validGolongan, validUmur, validAnak, Selesai bool
 	)
 
-	for i = len(itemKaryawan); Selesai != true; i++ {
+	for i = len(itemKaryawan); !Selesai; i++ {
 		fmt.Println("Masukkan Data Pegawai")
 
 		fmt.Print("Kode Pegawai : \t")
@@ -63,7 +63,7 @@ func inputKaryawan() {
 		fmt.Print("Golongan : \t")
 		fmt.Scanln(&Golongan)
 
-		for validGolongan != true {
+		for !validGolongan {
 			if Golongan > 3 || Golongan < 0 {
 				ErrorPrint.Println("\n Golongan Tersebut Tidak Ada ! \n")
 				fmt.Print("Golongan : \t")
@@ -75,7 +75,7 @@ func inputKaryawan() {
 
 		fmt.Print("Umur Pegawai: \t")
 		fmt.Scanln(&Umur)
-		for validUmur != true {
+		for !validUmur {
 			if Umur < 1 {
 				ErrorPrint.Println("\n Umur Tidak Valid ! \n")
 				fmt.Print("Umur Pegawai: \t")
@@ -91,7 +91,7 @@ func inputKaryawan() {
 
 		fmt.Print("Jumlah Anak : \t")
 		fmt.Scanln(&JumlahAnak)
-		for validAnak != true {
+		for !validAnak {
 			if JumlahAnak < 0 {
 				ErrorPrint.Println("\n Jumlah Anak Tidak Valid ! \n")
 				fmt.Print("Jumlah Anak : \t")
@@ -105,15 +105,7 @@ func inputKaryawan() {
 		scanner.Scan()
 		Alamat = scanner.Text()
 
-		karyawan := Karyawan{
-			Nama:        Nama,
-			KodePegawai: KodePegawai,
-			Golongan:    Golongan,
-			Umur:        Umur,
-			JumlahAnak:  JumlahAnak,
-			Alamat:      Alamat,
-		}
-
+		karyawan := Karyawan{Golongan, Umur, JumlahAnak, Nama, Alamat, KodePegawai}
 		itemKaryawan = append(itemKaryawan, karyawan)
 
 		fmt.Println("\nData Berhasil Diinputkan :")
@@ -145,7 +137,7 @@ func prosesCariKaryawan(kode string) int {
 	var Selesai bool
 	var index int
 
-	for i := 0; i < len(itemKaryawan) && Selesai != true; i++ {
+	for i := 0; i < len(itemKaryawan) && !Selesai; i++ {
 		if itemKaryawan[i].KodePegawai == kode {
 			index = i
 			Selesai = true
@@ -292,7 +284,7 @@ func sortKaryawanGolongan() {
 func validasiBulan(Bulan string) bool {
 	var validBulan bool
 	arrBulan := [12]string{
-		"Janurai", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
+		"Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
 		"Agustus", "September", "Oktober", "November", "Desember",
 	}
 
@@ -313,14 +305,12 @@ func inputGaji() {
 		inputLagi                                  string
 	)
 
-	tampilKaryawan()
-
-	for i = len(itemGaji); Selesai != true; i++ {
+	for i = len(itemGaji); !Selesai; i++ {
 		fmt.Println("Masukkan Gaji Pegawai")
 
 		fmt.Print("Kode Pegawai \t : ")
 		fmt.Scanln(&KodePegawai)
-		for validKode != true {
+		for !validKode {
 			if prosesCariKaryawan(KodePegawai) == -1 {
 				ErrorPrint.Println("\n Kode Pegawai Tidak Valid ! \n")
 				fmt.Print("Kode Pegawai \t : ")
@@ -332,7 +322,7 @@ func inputGaji() {
 
 		fmt.Print("Bulan \t\t : ")
 		fmt.Scanln(&Bulan)
-		for validBulan != true {
+		for !validBulan {
 			if validasiBulan(Bulan) {
 				validBulan = true
 			} else {
@@ -345,7 +335,7 @@ func inputGaji() {
 		fmt.Print("Jumlah Jam Kerja : ")
 		fmt.Scanln(&JamKerja)
 
-		for validWaktu != true {
+		for !validWaktu {
 			if JamKerja >= 0 {
 				validWaktu = true
 			} else {
@@ -377,13 +367,7 @@ func inputGaji() {
 			TotalGaji = TotalGaji + (GajiTetap * 10 / 100)
 		}
 
-		gaji := Gaji{
-			KodePegawai: KodePegawai,
-			Bulan:       Bulan,
-			JamKerja:    JamKerja,
-			TotalGaji:   TotalGaji,
-		}
-
+		gaji := Gaji{KodePegawai, Bulan, JamKerja, TotalGaji}
 		itemGaji = append(itemGaji, gaji)
 
 		fmt.Println("\nData Berhasil Diinputkan :")
@@ -440,7 +424,7 @@ func prosesCariGaji(kode string) int {
 	var Selesai bool
 	var index int
 
-	for i := 0; i < len(itemGaji) && Selesai != true; i++ {
+	for i := 0; i < len(itemGaji) && !Selesai; i++ {
 		if itemGaji[i].KodePegawai == kode {
 			index = i
 			Selesai = true
@@ -492,7 +476,7 @@ func cariGaji() {
 func sortGajiBulan() {
 	var (
 		sortGaji       []Gaji
-		sorted         = false
+		sorted         bool
 		Bulan          string
 		jumlahDataGaji int
 	)
