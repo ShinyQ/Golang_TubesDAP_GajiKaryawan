@@ -484,7 +484,6 @@ func sortGajiBulan() {
 	fmt.Scanln(&Bulan)
 
 	for i := 0; i < len(itemGaji); i++ {
-		fmt.Println(itemGaji[i].Bulan, " , ", Bulan)
 		if itemGaji[i].Bulan == Bulan {
 
 			gaji := Gaji{
@@ -579,5 +578,24 @@ func menu() {
 }
 
 func main() {
+	// Instead Of Input Manually We Can Use This Dummy Data xD
+	// This data is already suitable for Tubes Test Case
+
+	// Karyawan Struct {Golongan, Umur, Jumlah Anak, Nama, Alamat, Kode Pegawai}
+	itemKaryawan = append(itemKaryawan,
+		Karyawan{2, 19, 4, "Kurniadi Ahmad Wijaya", "Jalan Batununggal 15, Bojongsoang", "1301194024"},
+		Karyawan{3, 16, 6, "Muhammad Ilham Mubarak", "Jalan Bojongsoang 21, Bojongsoang", "1301194241"},
+		Karyawan{3, 20, 1, "Azrina Fazira Anshory", "Jalan BojongNunggal 18, Bojongsoang", "1301194276"},
+		Karyawan{1, 25, 1, "Adrian Hafizh Aryaputra", "Jalan SoangBatu 20, Bojongsoang", "1301194500"},
+	)
+
+	//Gaji Struct {Kode Pegawai, Bulan, Jam Kerja, Total Gaji}
+	itemGaji = append(itemGaji,
+		Gaji{"1301194241", "Januari", 200, 2230000},
+		Gaji{"1301194241", "Maret", 300, 7800000},
+		Gaji{"1301194276", "Januari", 150, 3325000},
+		Gaji{"1301194500", "Januari", 250, 1800000},
+	)
+
 	menu()
 }
