@@ -18,8 +18,8 @@ import (
 **/
 
 var (
-	Menu int
-
+	Menu         int
+	item         [12]Karyawan
 	itemKaryawan []Karyawan
 	itemGaji     []Gaji
 
@@ -60,28 +60,29 @@ func inputKaryawan() {
 		fmt.Print("Kode Pegawai : \t")
 		fmt.Scanln(&KodePegawai)
 
-		fmt.Print("Golongan : \t")
-		fmt.Scanln(&Golongan)
-
 		for !validGolongan {
-			if Golongan > 3 || Golongan < 0 {
-				ErrorPrint.Println("\n Golongan Tersebut Tidak Ada ! \n")
-				fmt.Print("Golongan : \t")
-				fmt.Scanln(&Golongan)
-			} else {
-				validGolongan = true
+			fmt.Print("Golongan : \t")
+			Golongan = handleString("Golongan Tersebut Tidak Ada")
+
+			if Golongan != -1 {
+				if Golongan > 3 || Golongan < 0 {
+					ErrorPrint.Println("\n Golongan Tersebut Tidak Ada ! \n")
+				} else {
+					validGolongan = true
+				}
 			}
 		}
 
-		fmt.Print("Umur Pegawai: \t")
-		fmt.Scanln(&Umur)
 		for !validUmur {
-			if Umur < 1 {
-				ErrorPrint.Println("\n Umur Tidak Valid ! \n")
-				fmt.Print("Umur Pegawai: \t")
-				fmt.Scanln(&Umur)
-			} else {
-				validUmur = true
+			fmt.Print("Umur Pegawai : \t")
+			Umur = handleString("Umur Tidak Valid !")
+
+			if Umur != -1 {
+				if Umur < 1 {
+					ErrorPrint.Println("\n Umur Tidak Valid ! \n")
+				} else {
+					validUmur = true
+				}
 			}
 		}
 
@@ -89,15 +90,15 @@ func inputKaryawan() {
 		scanner.Scan()
 		Nama = scanner.Text()
 
-		fmt.Print("Jumlah Anak : \t")
-		fmt.Scanln(&JumlahAnak)
 		for !validAnak {
-			if JumlahAnak < 0 {
-				ErrorPrint.Println("\n Jumlah Anak Tidak Valid ! \n")
-				fmt.Print("Jumlah Anak : \t")
-				fmt.Scanln(&JumlahAnak)
-			} else {
-				validAnak = true
+			fmt.Print("Jumlah Anak : \t")
+			JumlahAnak = handleString("Jumlah Anak Tidak Valid !")
+			if JumlahAnak != -1 {
+				if JumlahAnak < 0 {
+					ErrorPrint.Println("\n Jumlah Anak Tidak Valid ! \n")
+				} else {
+					validAnak = true
+				}
 			}
 		}
 
@@ -332,16 +333,15 @@ func inputGaji() {
 			}
 		}
 
-		fmt.Print("Jumlah Jam Kerja : ")
-		fmt.Scanln(&JamKerja)
-
 		for !validWaktu {
-			if JamKerja >= 0 {
-				validWaktu = true
-			} else {
-				ErrorPrint.Println("\n Jumlah Waktu Kerja Tidak Valid ! \n")
-				fmt.Print("Jumlah Jam Kerja : ")
-				fmt.Scanln(&JamKerja)
+			fmt.Print("Jumlah Jam Kerja : ")
+			JamKerja = handleString("Jumlah Waktu Kerja Tidak Valid !")
+			if JamKerja != -1 {
+				if JamKerja >= 0 {
+					validWaktu = true
+				} else {
+					ErrorPrint.Println("\n Jumlah Waktu Kerja Tidak Valid ! \n")
+				}
 			}
 		}
 
@@ -534,50 +534,73 @@ func sortGajiBulan() {
 	menu()
 }
 
+func handleString(msg string) int {
+	var (
+		a     int
+		err   error
+		input string
+	)
+	fmt.Scanln(&input)
+	a, err = strconv.Atoi(input)
+	if err != nil {
+		ErrorPrint.Println("\n", msg, " \n")
+		a = -1
+	}
+	return a
+}
+
 /**
 	+-------------------------------------+
 	|    	MENU AND MAIN FUNCTION    	  |
     +-------------------------------------+
 **/
 
-func menu() {
+func inputMenu() {
 
+	fmt.Print("Silahakan Pilih Menu : ")
+	Menu = handleString("Menu Tersebut Tidak Ada !")
+	fmt.Println("")
+	if Menu != -1 {
+		if Menu == 1 {
+			inputKaryawan()
+		} else if Menu == 2 {
+			tampilKaryawan()
+		} else if Menu == 3 {
+			cariKaryawan()
+		} else if Menu == 4 {
+			inputGaji()
+		} else if Menu == 5 {
+			tampilGaji()
+		} else if Menu == 6 {
+			cariGaji()
+		} else if Menu == 7 {
+			sortKaryawanGolongan()
+		} else if Menu == 8 {
+			sortGajiBulan()
+		} else if Menu == 9 {
+			defer SuccessPrint.Println(" Sukses Keluar Program ")
+		} else {
+			ErrorPrint.Println(" Menu Tersebut Tidak Ada ! \n")
+			inputMenu()
+		}
+	} else {
+		inputMenu()
+	}
+
+}
+
+func menu() {
 	fmt.Println("\n+----------------------------------+--------------------------------------+-------------------------------------------------------+")
 	fmt.Println("| Menu 1 : Input Data Karyawan	   |	 Menu 4 : Input Gaji Karyawan	  |	 Menu 7 : Cari Karyawan Berdasarkan Golongan	  |")
 	fmt.Println("| Menu 2 : Lihat Data Karyawan	   |	 Menu 5 : Histori Data Gaji	  |	 Menu 8 : Cari Gaji Berdasarkan Bulan	      	  |")
 	fmt.Println("| Menu 3 : Cari Data Karyawan 	   |	 Menu 6 : Cari Histori Data Gaji  |  	 Menu 9 : Keluar Program	  		  |")
 	fmt.Println("+----------------------------------+--------------------------------------+-------------------------------------------------------+\n")
 
-	fmt.Print("Silahakan Pilih Menu : ")
-	fmt.Scanln(&Menu)
-	fmt.Println("")
-
-	if Menu == 1 {
-		inputKaryawan()
-	} else if Menu == 2 {
-		tampilKaryawan()
-	} else if Menu == 3 {
-		cariKaryawan()
-	} else if Menu == 4 {
-		inputGaji()
-	} else if Menu == 5 {
-		tampilGaji()
-	} else if Menu == 6 {
-		cariGaji()
-	} else if Menu == 7 {
-		sortKaryawanGolongan()
-	} else if Menu == 8 {
-		sortGajiBulan()
-	} else if Menu == 9 {
-		defer SuccessPrint.Println(" Sukses Keluar Program ")
-	} else {
-		ErrorPrint.Println(" Menu Tersebut Tidak Ada ! ")
-		menu()
-	}
-
+	inputMenu()
 }
 
 func main() {
+
 	// Instead Of Input Manually We Can Use This Dummy Data xD
 	// This data is already suitable for Tubes Test Case
 
