@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
@@ -19,7 +20,6 @@ import (
 
 var (
 	Menu         int
-	item         [12]Karyawan
 	itemKaryawan []Karyawan
 	itemGaji     []Gaji
 
@@ -48,17 +48,24 @@ type Gaji struct {
 
 func inputKaryawan() {
 	var (
-		i, Golongan, Umur, JumlahAnak                int
-		Nama, Alamat, KodePegawai                    string
-		inputLagi                                    string
-		validGolongan, validUmur, validAnak, Selesai bool
+		i, Golongan, Umur, JumlahAnak                           int
+		Nama, Alamat, KodePegawai                               string
+		inputLagi                                               string
+		validGolongan, validKode, validUmur, validAnak, Selesai bool
 	)
 
 	for i = len(itemKaryawan); !Selesai; i++ {
 		fmt.Println("Masukkan Data Pegawai")
 
-		fmt.Print("Kode Pegawai : \t")
-		fmt.Scanln(&KodePegawai)
+		for !validKode {
+			fmt.Print("Kode Pegawai : \t")
+			fmt.Scanln(&KodePegawai)
+			if prosesCariKodePegawai(KodePegawai) {
+				ErrorPrint.Println("\n Kode Pegawai Tersebut Sudah Ada \n")
+			} else {
+				validKode = true
+			}
+		}
 
 		for !validGolongan {
 			fmt.Print("Golongan : \t")
@@ -126,6 +133,10 @@ func inputKaryawan() {
 
 		fmt.Print("\nInput Lagi ? (Y / T) : ")
 		fmt.Scanln(&inputLagi)
+
+		validGolongan = false
+		validUmur = false
+		validAnak = false
 		fmt.Println("")
 		if inputLagi == "T" || inputLagi == "t" {
 			Selesai = true
@@ -134,16 +145,23 @@ func inputKaryawan() {
 	menu()
 }
 
-func prosesCariKaryawan(kode string) int {
-	var Selesai bool
-	var index int
+func prosesCariKodePegawai(kode string) bool {
+	index := false
 
-	for i := 0; i < len(itemKaryawan) && !Selesai; i++ {
+	for i := 0; i < len(itemKaryawan); i++ {
+		if itemKaryawan[i].KodePegawai == kode {
+			index = true
+		}
+	}
+	return index
+}
+
+func prosesCariKaryawan(kode string) int {
+	index := -1
+
+	for i := 0; i < len(itemKaryawan); i++ {
 		if itemKaryawan[i].KodePegawai == kode {
 			index = i
-			Selesai = true
-		} else {
-			index = -1
 		}
 	}
 	return index
@@ -223,12 +241,12 @@ func sortKaryawanGolongan() {
 		if itemKaryawan[i].Golongan == Golongan {
 
 			karyawan := Karyawan{
-				Nama:        itemKaryawan[i].Nama,
-				KodePegawai: itemKaryawan[i].KodePegawai,
-				Golongan:    itemKaryawan[i].Golongan,
-				Umur:        itemKaryawan[i].Umur,
-				JumlahAnak:  itemKaryawan[i].JumlahAnak,
-				Alamat:      itemKaryawan[i].Alamat,
+				itemKaryawan[i].Golongan,
+				itemKaryawan[i].Umur,
+				itemKaryawan[i].JumlahAnak,
+				itemKaryawan[i].Nama,
+				itemKaryawan[i].Alamat,
+				itemKaryawan[i].KodePegawai,
 			}
 			sortKaryawan = append(sortKaryawan, karyawan)
 		}
@@ -239,7 +257,7 @@ func sortKaryawanGolongan() {
 		for !sorted {
 			swapped := false
 			for i := 0; i < jumlahDataKaryawan-1; i++ {
-				if sortKaryawan[i].Nama > sortKaryawan[i+1].Nama {
+				if strings.ToUpper(sortKaryawan[i].Nama) > strings.ToUpper(sortKaryawan[i+1].Nama) {
 					sortKaryawan[i+1], sortKaryawan[i] = sortKaryawan[i], sortKaryawan[i+1]
 					swapped = true
 				}
@@ -290,7 +308,7 @@ func validasiBulan(Bulan string) bool {
 	}
 
 	for j := 0; j < len(arrBulan); j++ {
-		if Bulan == arrBulan[j] {
+		if strings.ToUpper(Bulan) == strings.ToUpper(arrBulan[j]) {
 			validBulan = true
 		}
 	}
@@ -323,13 +341,22 @@ func inputGaji() {
 
 		fmt.Print("Bulan \t\t : ")
 		fmt.Scanln(&Bulan)
+		Bulan = strings.Title(strings.ToLower(Bulan))
 		for !validBulan {
 			if validasiBulan(Bulan) {
-				validBulan = true
+				if cariDataGaji(KodePegawai, Bulan) {
+					ErrorPrint.Println("\n Karyawan Tersebut Sudah Di Gaji Pada Bulan", Bulan, "\n")
+					fmt.Print("Bulan \t\t : ")
+					fmt.Scanln(&Bulan)
+					Bulan = strings.Title(strings.ToLower(Bulan))
+				} else {
+					validBulan = true
+				}
 			} else {
 				ErrorPrint.Println("\n Bulan Tersebut Tidak Ada ! \n")
 				fmt.Print("Bulan \t\t : ")
 				fmt.Scanln(&Bulan)
+				Bulan = strings.Title(strings.ToLower(Bulan))
 			}
 		}
 
@@ -386,6 +413,10 @@ func inputGaji() {
 
 		fmt.Print("\nInput Lagi ? (Y / T) : ")
 		fmt.Scanln(&inputLagi)
+
+		validWaktu = false
+		validKode = false
+		validBulan = false
 		fmt.Println("")
 
 		if inputLagi == "T" || inputLagi == "t" {
@@ -393,6 +424,17 @@ func inputGaji() {
 		}
 	}
 	menu()
+}
+
+func cariDataGaji(KodePegawai, Bulan string) bool {
+	index := false
+
+	for i := 0; i < len(itemGaji); i++ {
+		if itemGaji[i].KodePegawai == KodePegawai && itemGaji[i].Bulan == Bulan {
+			index = true
+		}
+	}
+	return index
 }
 
 func tampilGaji() {
@@ -421,15 +463,12 @@ func tampilGaji() {
 }
 
 func prosesCariGaji(kode string) int {
-	var Selesai bool
-	var index int
+	index := -1
 
-	for i := 0; i < len(itemGaji) && !Selesai; i++ {
+	for i := 0; i < len(itemGaji); i++ {
 		if itemGaji[i].KodePegawai == kode {
 			index = i
-			Selesai = true
-		} else {
-			index = -1
+
 		}
 	}
 	return index
@@ -484,13 +523,13 @@ func sortGajiBulan() {
 	fmt.Scanln(&Bulan)
 
 	for i := 0; i < len(itemGaji); i++ {
-		if itemGaji[i].Bulan == Bulan {
+		if itemGaji[i].Bulan == strings.Title(strings.ToLower(Bulan)) {
 
 			gaji := Gaji{
-				KodePegawai: itemGaji[i].KodePegawai,
-				Bulan:       itemGaji[i].Bulan,
-				JamKerja:    itemGaji[i].JamKerja,
-				TotalGaji:   itemGaji[i].TotalGaji,
+				itemGaji[i].KodePegawai,
+				itemGaji[i].Bulan,
+				itemGaji[i].JamKerja,
+				itemGaji[i].TotalGaji,
 			}
 
 			sortGaji = append(sortGaji, gaji)
