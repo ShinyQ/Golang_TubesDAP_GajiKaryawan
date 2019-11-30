@@ -48,20 +48,24 @@ type Gaji struct {
 
 func inputKaryawan() {
 	var (
-		i, Golongan, Umur, JumlahAnak                           int
-		Nama, Alamat, KodePegawai                               string
-		inputLagi                                               string
-		validGolongan, validKode, validUmur, validAnak, Selesai bool
+		i, Golongan, Umur, JumlahAnak                                                   int
+		Nama, Alamat, KodePegawai                                                       string
+		inputLagi                                                                       string
+		validNama, validAlamat, validGolongan, validKode, validUmur, validAnak, Selesai bool
 	)
 
 	for i = len(itemKaryawan); !Selesai; i++ {
-		fmt.Println("Masukkan Data Pegawai")
+		fmt.Println("======================================")
+		fmt.Println(" MASUKKAN DATA PEGAWAI")
+		fmt.Println("======================================")
 
 		for !validKode {
 			fmt.Print("Kode Pegawai : \t")
 			fmt.Scanln(&KodePegawai)
 			if prosesCariKodePegawai(KodePegawai) {
 				ErrorPrint.Println("\n Kode Pegawai Tersebut Sudah Ada \n")
+			} else if len(KodePegawai) == 0 {
+				ErrorPrint.Println("\n Kode Pegawai Harus Diisi \n")
 			} else {
 				validKode = true
 			}
@@ -93,9 +97,17 @@ func inputKaryawan() {
 			}
 		}
 
-		fmt.Print("Nama Pegawai: \t")
-		scanner.Scan()
-		Nama = scanner.Text()
+		for !validNama {
+			fmt.Print("Nama Pegawai: \t")
+			scanner.Scan()
+			Nama = scanner.Text()
+
+			if len(Nama) == 0 {
+				ErrorPrint.Println("\n Nama Pegawai Harus Diisi \n")
+			} else {
+				validNama = true
+			}
+		}
 
 		for !validAnak {
 			fmt.Print("Jumlah Anak : \t")
@@ -109,9 +121,17 @@ func inputKaryawan() {
 			}
 		}
 
-		fmt.Print("Alamat : \t")
-		scanner.Scan()
-		Alamat = scanner.Text()
+		for !validAlamat {
+			fmt.Print("Alamat : \t")
+			scanner.Scan()
+			Alamat = scanner.Text()
+
+			if len(Alamat) == 0 {
+				ErrorPrint.Println("\n Alamat Pegawai Harus Diisi \n")
+			} else {
+				validAlamat = true
+			}
+		}
 
 		karyawan := Karyawan{Golongan, Umur, JumlahAnak, Nama, Alamat, KodePegawai}
 		itemKaryawan = append(itemKaryawan, karyawan)
@@ -134,9 +154,17 @@ func inputKaryawan() {
 		fmt.Print("\nInput Lagi ? (Y / T) : ")
 		fmt.Scanln(&inputLagi)
 
+		validKode = false
 		validGolongan = false
 		validUmur = false
 		validAnak = false
+		validNama = false
+		validAlamat = false
+
+		KodePegawai = ""
+		Nama = ""
+		Alamat = ""
+
 		fmt.Println("")
 		if inputLagi == "T" || inputLagi == "t" {
 			Selesai = true
@@ -325,38 +353,35 @@ func inputGaji() {
 	)
 
 	for i = len(itemGaji); !Selesai; i++ {
-		fmt.Println("Masukkan Gaji Pegawai")
+		fmt.Println("======================================")
+		fmt.Println(" MASUKKAN GAJI PEGAWAI")
+		fmt.Println("======================================")
 
-		fmt.Print("Kode Pegawai \t : ")
-		fmt.Scanln(&KodePegawai)
 		for !validKode {
-			if prosesCariKaryawan(KodePegawai) == -1 {
+			fmt.Print("Kode Pegawai \t : ")
+			fmt.Scanln(&KodePegawai)
+
+			if len(KodePegawai) == 0 {
+				ErrorPrint.Println("\n Kode Pegawai Harus Dimasukkan \n")
+			} else if prosesCariKaryawan(KodePegawai) == -1 {
 				ErrorPrint.Println("\n Kode Pegawai Tidak Valid ! \n")
-				fmt.Print("Kode Pegawai \t : ")
-				fmt.Scanln(&KodePegawai)
 			} else {
 				validKode = true
 			}
 		}
 
-		fmt.Print("Bulan \t\t : ")
-		fmt.Scanln(&Bulan)
-		Bulan = strings.Title(strings.ToLower(Bulan))
 		for !validBulan {
+			fmt.Print("Bulan \t\t : ")
+			fmt.Scanln(&Bulan)
+			Bulan = strings.Title(strings.ToLower(Bulan))
 			if validasiBulan(Bulan) {
 				if cariDataGaji(KodePegawai, Bulan) {
 					ErrorPrint.Println("\n Karyawan Tersebut Sudah Di Gaji Pada Bulan", Bulan, "\n")
-					fmt.Print("Bulan \t\t : ")
-					fmt.Scanln(&Bulan)
-					Bulan = strings.Title(strings.ToLower(Bulan))
 				} else {
 					validBulan = true
 				}
 			} else {
 				ErrorPrint.Println("\n Bulan Tersebut Tidak Ada ! \n")
-				fmt.Print("Bulan \t\t : ")
-				fmt.Scanln(&Bulan)
-				Bulan = strings.Title(strings.ToLower(Bulan))
 			}
 		}
 
@@ -417,6 +442,10 @@ func inputGaji() {
 		validWaktu = false
 		validKode = false
 		validBulan = false
+
+		KodePegawai = ""
+		Bulan = ""
+
 		fmt.Println("")
 
 		if inputLagi == "T" || inputLagi == "t" {
